@@ -1,0 +1,19 @@
+---
+- hosts: [dev]
+  become: true
+  connection: ssh
+  tasks:
+    - name: Installing Apache httpd
+      yum: name=httpd state=present
+
+    - name: Start the service
+      service: name=httpd state=started
+
+    - name: copying index.html file
+      copy:
+        src: index.html
+        dest: "/var/www/html"
+        owner: root
+        group: root
+        mode: "0644"
+...
