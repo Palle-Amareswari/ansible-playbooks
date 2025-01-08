@@ -1,0 +1,31 @@
+# This is related to error handling
+
+---
+- hosts: dev
+  become: yes
+  tasks:
+    - name: Check whether openssl and openssh packages are installed
+      yum: 
+        name: "{{ item }}" 
+        state: latest
+      loop:
+        - openssl
+        - openssh
+      ignore_errors: yes
+
+    - name: Check whether Docker is installed
+      command: docker --version
+      register: output
+      ignore_errors: yes
+
+    - name: Display Docker version check result
+      debug:
+        var: output
+
+    - name: Install Docker if not installed
+      yum: 
+        name: docker 
+        state: present
+      when: output.failed
+
+...
