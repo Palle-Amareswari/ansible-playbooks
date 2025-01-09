@@ -1,0 +1,30 @@
+# This is related to Policy as code.
+# This all we need to do in Ansible Contorl Node.
+# Prerequisites : Need to install Ansible, Python3,  boto3, amazon.aws(collection)
+# And also you need to configure AWS access and secret keys.
+
+
+
+---
+- name: Enforce S3 bucket versioning
+  hosts: localhost
+  become: true
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: List the S3 buckets in AWS
+      amazon.aws.s3_bucket_info:
+      register: result
+
+    - name: Print bucket details
+      debug:
+        var: result.buckets
+
+    - name: Enable S3 Versioning
+      amazon.aws.s3_bucket:
+        name: "{{ item.name }}"
+        versioning: no
+      loop: "{{ result.buckets }}"
+      loop_control:
+        label: "{{ item.name }}"
+...
